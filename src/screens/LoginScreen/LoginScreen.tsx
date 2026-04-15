@@ -29,8 +29,9 @@ import { useNavigation } from '@react-navigation/native';
 import LeafIllustration from '../../components/LeafIllustration';
 import AnimatedInput from '../../components/AnimatedInput';
 import { styles } from '../../styles/loginStyles';
+import { API_URL } from '@env';
 
-const BASE_URL = 'https://your-api-url.com'; // ← đổi lại URL thực tế
+const BASE_URL = API_URL;
 
 const LoginScreen: React.FC = () => {
   const navigation = useNavigation<any>();
