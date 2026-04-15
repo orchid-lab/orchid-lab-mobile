@@ -1,14 +1,15 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { ClipboardList, BookOpen, FileText, Sprout } from 'lucide-react-native';
+import { ClipboardList, BookOpen, FileText, Sprout, TestTube } from 'lucide-react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { styles } from '../screens/TechnicianReports/styles';
+import { styles } from '../screens/Reports/styles';
 
 const TABS = [
   { id: 'tasks', label: 'Công việc', icon: ClipboardList, route: 'Tasks' },
   { id: 'logs', label: 'Nhật ký TN', icon: BookOpen, route: 'ExperimentLog' },
   { id: 'reports', label: 'Báo cáo', icon: FileText, route: 'TechnicianReports' },
   { id: 'batches', label: 'Lô nuôi cấy', icon: Sprout, route: 'Batches' },
+  { id: 'samples', label: 'Mẫu', icon: TestTube, route: 'Samples' }, 
 ];
 
 export const CustomTabBar = () => {

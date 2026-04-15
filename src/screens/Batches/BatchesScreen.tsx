@@ -4,18 +4,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BookOpen, Activity, Search, SlidersHorizontal } from 'lucide-react-native';
+import { Sprout, Search, SlidersHorizontal, Box } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { API_URL } from '@env';
 
 import { styles } from '../Reports/styles';
 import { CustomTabBar } from '../../components/CustomTabBar';
-import { ExperimentLogItem } from '../../components/ExperimentLogItem';
+import { BatchItem } from '../../components/BatchItem';
 
 const BASE_URL = API_URL;
 const PAGE_SIZE = 10;
 
-const ExperimentLogScreen = () => {
+const BatchesScreen = () => {
   const [data, setData] = useState<any[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page] = useState(1);
@@ -23,11 +23,12 @@ const ExperimentLogScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchLogs = useCallback(async (pageNo: number, replace: boolean) => {
+  const fetchBatches = useCallback(async (pageNo: number, replace: boolean) => {
     if (replace) setLoading(true);
     try {
+      // Tuyệt chiêu xử lý dấu // trong URL
       const cleanUrl = String(BASE_URL).replace(/\/+$/, '');
-      const res = await fetch(`${cleanUrl}/api/experiment-logs?pageNo=${pageNo}&pageSize=${PAGE_SIZE}`);
+      const res = await fetch(`${cleanUrl}/api/batches?pageNo=${pageNo}&pageSize=${PAGE_SIZE}`);
       const json = await res.json();
       
       const fetchedData = json.data ?? [];
@@ -35,39 +36,47 @@ const ExperimentLogScreen = () => {
       setTotalCount(json.totalCount ?? 0);
       setHasMore(pageNo < (json.pageCount ?? 1));
     } catch (e) {
-      console.error("Lỗi fetch log:", e);
+      console.error("Lỗi fetch batches:", e);
     } finally {
       setLoading(false); setRefreshing(false);
     }
   }, []);
 
-  useEffect(() => { fetchLogs(1, true); }, []);
+  useEffect(() => { fetchBatches(1, true); }, []);
 
   const ListHeader = () => (
     <View style={styles.listHeaderPadding}>
       <View style={styles.metricsContainer}>
         <View style={[styles.metricCard, { backgroundColor: '#FFFFFF' }]}>
-          <BookOpen size={20} color="#1F3D2F" />
+          <Sprout size={20} color="#1F3D2F" />
           <Text style={styles.metricValue}>{totalCount}</Text>
-          <Text style={styles.metricTitle}>Tổng nhật ký{"\n"}thí nghiệm</Text>
+          <Text style={styles.metricTitle}>Tổng số{"\n"}lô nuôi</Text>
         </View>
         <View style={[styles.metricCard, { backgroundColor: '#A3F7BF' }]}>
-          <Activity size={20} color="#1F3D2F" />
-          <Text style={styles.metricValue}>{data.filter(i => i.status === 'Created').length}</Text>
-          <Text style={styles.metricTitle}>Nhật ký mới{"\n"}vừa tạo</Text>
+          <Box size={20} color="#1F3D2F" />
+          <Text style={styles.metricValue}>
+            {data.filter(i => i.status === 'Ready').length}
+          </Text>
+          <Text style={styles.metricTitle}>Lô nuôi{"\n"}sẵn sàng</Text>
         </View>
       </View>
-      <Text style={styles.sectionTitle}>Danh sách nhật ký</Text>
+      <Text style={styles.sectionTitle}>Danh sách lô nuôi</Text>
     </View>
   );
 
   return (
     <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
-      <LinearGradient colors={['#DFE7DF', '#F2F6F2']} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+      <LinearGradient 
+        colors={['#DFE7DF', '#F2F6F2']} 
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} 
+      />
       
       <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Nhật Ký</Text>
-        <View style={styles.headerActions}><Search size={22} color="#1F3D2F" /><SlidersHorizontal size={22} color="#1F3D2F" /></View>
+        <Text style={styles.headerTitle}>Lô Nuôi</Text>
+        <View style={styles.headerActions}>
+          <Search size={22} color="#1F3D2F" />
+          <SlidersHorizontal size={22} color="#1F3D2F" />
+        </View>
       </View>
 
       {loading ? (
@@ -75,14 +84,17 @@ const ExperimentLogScreen = () => {
       ) : (
         <FlatList
           data={data}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.scrollContent}
           ListHeaderComponent={ListHeader}
-          renderItem={({ item, index }) => <ExperimentLogItem item={item} index={index} />}
+          renderItem={({ item }) => <BatchItem item={item} />}
           ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => fetchLogs(1, true)} tintColor="#1F3D2F" />}
-          onEndReached={() => hasMore && fetchLogs(page + 1, false)}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={() => fetchBatches(1, true)} tintColor="#1F3D2F" />
+          }
+          onEndReached={() => hasMore && fetchBatches(page + 1, false)}
           onEndReachedThreshold={0.3}
+          showsVerticalScrollIndicator={false}
         />
       )}
       <CustomTabBar />
@@ -90,4 +102,4 @@ const ExperimentLogScreen = () => {
   );
 };
 
-export default ExperimentLogScreen;
+export default BatchesScreen;

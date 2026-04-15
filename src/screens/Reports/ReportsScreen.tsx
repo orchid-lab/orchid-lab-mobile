@@ -87,7 +87,7 @@ const TechnicianReportsScreen = () => {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => fetchReports(1, true)} tintColor="#1F3D2F" />}
         onEndReached={() => !loadingMore && hasMore && fetchReports(page + 1, false)}
         ListFooterComponent={loadingMore ? <ActivityIndicator color="#1F3D2F" /> : null}
-        ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
+        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
       />
 
       <CustomTabBar />
