@@ -8,13 +8,12 @@ import { FileBarChart2, AlertCircle } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { API_URL } from '@env';
 
-// Import các thành phần đã tách
 import { styles } from './styles';
 import { CustomTabBar } from '../../components/CustomTabBar';
 import { ReportItem } from '../../components/ReportItem';
 
 const BASE_URL = API_URL;
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 100;
 const QUICK_FILTERS = ['Tất cả', 'Tuần này', 'Tháng này', 'Quý 1'];
 
 const TechnicianReportsScreen = () => {
@@ -26,41 +25,48 @@ const TechnicianReportsScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [pendingCount, setPendingCount] = useState(0);
 
   const fetchReports = useCallback(async (pageNo: number, replace: boolean) => {
-    if (replace) setLoading(true); else setLoadingMore(true);
-    try {
-      const cleanUrl = String(BASE_URL).replace(/\/+$/, '');
-      const res = await fetch(`${cleanUrl}/api/monitoring-log?pageNo=${pageNo}&pageSize=${PAGE_SIZE}`);
-      const json = await res.json();
-      setData(prev => replace ? (json.data ?? []) : [...prev, ...(json.data ?? [])]);
-      setTotalCount(json.totalCount ?? 0);
-      setHasMore(pageNo < (json.pageCount ?? 1));
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false); setLoadingMore(false); setRefreshing(false);
-    }
+  if (replace) setLoading(true); else setLoadingMore(true);
+  try {
+    const cleanUrl = String(BASE_URL).replace(/\/+$/, '');
+    const res = await fetch(`${cleanUrl}/api/monitoring-log?pageNo=${pageNo}&pageSize=${PAGE_SIZE}`);
+    const json = await res.json();
+    
+    const fetchedData = json.data ?? [];
+    setData(prev => replace ? fetchedData : [...prev, ...fetchedData]);
+    setTotalCount(json.totalCount ?? 0);
+    setHasMore(pageNo < (json.pageCount ?? 1));
+    const pending = fetchedData.filter((item: any) => item.status === 'WaitingForApproval').length;
+    setPendingCount(pending);
+
+  } catch (e) {
+    console.error(e);
+  } finally {
+    setLoading(false); setLoadingMore(false); setRefreshing(false);
+  }
   }, []);
 
   useEffect(() => { fetchReports(1, true); }, []);
 
   const ListHeader = () => (
-    <View style={styles.listHeaderPadding}>
-      <View style={styles.metricsContainer}>
-        <View style={[styles.metricCard, { backgroundColor: '#FFFFFF' }]}>
-          <FileBarChart2 size={20} color="#1F3D2F" />
-          <Text style={styles.metricValue}>{totalCount}</Text>
-          <Text style={styles.metricTitle}>Tổng số{"\n"}báo cáo</Text>
-        </View>
-        <View style={[styles.metricCard, { backgroundColor: '#A3F7BF' }]}>
-          <AlertCircle size={20} color="#1F3D2F" />
-          <Text style={styles.metricValue}>3</Text>
-          <Text style={styles.metricTitle}>Đang chờ{"\n"}xử lý</Text>
-        </View>
+  <View style={styles.listHeaderPadding}>
+    <View style={styles.metricsContainer}>
+      <View style={[styles.metricCard, { backgroundColor: '#FFFFFF' }]}>
+        <FileBarChart2 size={20} color="#1F3D2F" />
+        <Text style={styles.metricValue}>{totalCount}</Text>
+        <Text style={styles.metricTitle}>Tổng số{"\n"}báo cáo</Text>
       </View>
-      <Text style={styles.sectionTitle}>Danh sách báo cáo</Text>
+      <View style={[styles.metricCard, { backgroundColor: '#A3F7BF' }]}>
+        <AlertCircle size={20} color="#1F3D2F" />
+        {/* THAY SỐ 3 THÀNH BIẾN PENDINGCOUNT */}
+        <Text style={styles.metricValue}>{pendingCount}</Text>
+        <Text style={styles.metricTitle}>Đang chờ{"\n"}xử lý</Text>
+      </View>
     </View>
+    <Text style={styles.sectionTitle}>Danh sách báo cáo</Text>
+  </View>
   );
 
   return (
@@ -81,6 +87,7 @@ const TechnicianReportsScreen = () => {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => fetchReports(1, true)} tintColor="#1F3D2F" />}
         onEndReached={() => !loadingMore && hasMore && fetchReports(page + 1, false)}
         ListFooterComponent={loadingMore ? <ActivityIndicator color="#1F3D2F" /> : null}
+        ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
       />
 
       <CustomTabBar />
