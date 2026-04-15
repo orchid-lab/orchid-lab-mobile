@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BookOpen, Activity, Search, SlidersHorizontal } from 'lucide-react-native';
+import { BookOpen, Activity } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { API_URL } from '@env';
 
@@ -67,7 +67,6 @@ const ExperimentLogScreen = () => {
       
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Nhật Ký</Text>
-        <View style={styles.headerActions}><Search size={22} color="#1F3D2F" /><SlidersHorizontal size={22} color="#1F3D2F" /></View>
       </View>
 
       {loading ? (

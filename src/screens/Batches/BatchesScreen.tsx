@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Sprout, Search, SlidersHorizontal, Box } from 'lucide-react-native';
+import { Sprout, Box } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { API_URL } from '@env';
 
@@ -73,10 +73,6 @@ const BatchesScreen = () => {
       
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Lô Nuôi</Text>
-        <View style={styles.headerActions}>
-          <Search size={22} color="#1F3D2F" />
-          <SlidersHorizontal size={22} color="#1F3D2F" />
-        </View>
       </View>
 
       {loading ? (
