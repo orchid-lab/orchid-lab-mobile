@@ -5,7 +5,7 @@ import { styles } from '../screens/TechnicianReports/styles';
 
 const TABS = [
   { id: 'tasks', label: 'Công việc', icon: ClipboardList, active: false },
-  { id: 'logs', label: 'Nhật ký', icon: BookOpen, active: false },
+  { id: 'logs', label: 'Nhật ký TN', icon: BookOpen, active: false },
   { id: 'reports', label: 'Báo cáo', icon: FileText, active: true },
   { id: 'batches', label: 'Lô nuôi cấy', icon: Sprout, active: false },
 ];

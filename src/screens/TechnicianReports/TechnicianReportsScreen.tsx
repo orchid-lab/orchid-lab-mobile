@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Search, SlidersHorizontal, FileBarChart2, AlertCircle } from 'lucide-react-native';
+import { FileBarChart2, AlertCircle } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { API_URL } from '@env';
 
@@ -70,7 +70,6 @@ const TechnicianReportsScreen = () => {
       {/* Header UI */}
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Báo Cáo</Text>
-        <View style={styles.headerActions}><Search size={22} color="#1F3D2F" /><SlidersHorizontal size={22} color="#1F3D2F" /></View>
       </View>
 
       <FlatList
