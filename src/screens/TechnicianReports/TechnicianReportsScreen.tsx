@@ -4,12 +4,17 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   View, Text, FlatList, TextInput,
   TouchableOpacity, ActivityIndicator,
-  SafeAreaView, RefreshControl,
+  RefreshControl, // ĐÃ XÓA SafeAreaView ở đây
 } from 'react-native';
+
+// THÊM DÒNG NÀY: Import SafeAreaView xịn từ thư viện mới
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { s } from '../../styles/technicianReportsStyles';
 import { ReportCard, Report } from './ReportCard';
+import { API_URL } from '@env';
 
-const BASE_URL = 'https://your-api-url.com'; // ← đổi lại
+const BASE_URL = API_URL;
 const PAGE_SIZE = 10;
 const FILTERS = ['All', 'Created', 'Pending', 'Done', 'Rejected'];
 
@@ -27,13 +32,19 @@ const TechnicianReportsScreen = () => {
   const fetchReports = useCallback(async (pageNo: number, replace: boolean) => {
     if (replace) setLoading(true); else setLoadingMore(true);
     try {
+      // TUYỆT CHIÊU DỌN DẸP DẤU "//" NHƯ BÊN LOGIN
+      const rawUrl = String(BASE_URL);
+      const cleanUrl = rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
+
       const params = new URLSearchParams({
         pageNo: String(pageNo),
         pageSize: String(PAGE_SIZE),
         ...(search ? { nameSearchTerm: search } : {}),
         ...(activeFilter !== 'All' ? { status: activeFilter } : {}),
       });
-      const res = await fetch(`${BASE_URL}/api/monitoring-log?${params}`);
+
+      // Dùng cleanUrl để gọi API an toàn
+      const res = await fetch(`${cleanUrl}/api/monitoring-log?${params}`);
       const json = await res.json();
       const newData: Report[] = json.data ?? [];
       setTotalCount(json.totalCount ?? 0);
@@ -68,7 +79,8 @@ const TechnicianReportsScreen = () => {
   };
 
   return (
-    <SafeAreaView style={s.root}>
+    // SafeAreaView này giờ đã là bản xịn, không còn báo lỗi vàng nữa
+    <SafeAreaView style={s.root} edges={['top', 'bottom', 'left', 'right']}>
       {/* Header */}
       <View style={s.header}>
         <View style={s.headerTop}>
