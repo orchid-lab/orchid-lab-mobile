@@ -7,7 +7,6 @@ export const styles = StyleSheet.create({
     flex: 1, 
     backgroundColor: '#000' 
   },
-  // Container bọc ngoài để cố định vị trí ảnh
   bgContainer: {
     ...StyleSheet.absoluteFill,
     width: SCREEN_W,
@@ -16,20 +15,18 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     overflow: 'hidden',
   },
-  // Style cho ảnh - Ép theo kích thước màn hình
   bgImage: {
     width: SCREEN_W,
     height: SCREEN_H,
   },
   overlay: { 
     ...StyleSheet.absoluteFill, 
-    backgroundColor: 'rgba(0, 0, 0, 0.2)' // Lớp phủ tối nhẹ để chữ nổi bật
+    backgroundColor: 'rgba(0, 0, 0, 0.35)' 
   },
   contentContainer: { 
     flex: 1 
   },
 
-  // ─── GREETING SECTION ───
   headlineWrap: {
     position: 'absolute',
     top: SCREEN_H * 0.38,
@@ -55,21 +52,21 @@ export const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
-  // ─── GLASSMORPHISM CARD ───
   glassCard: {
     position: 'absolute',
     alignSelf: 'center',
     width: SCREEN_W * 0.88,
-    backgroundColor: 'rgba(255, 255, 255, 0)',
+    backgroundColor: 'transparent', // Quan trọng: Phải trong suốt để thấy hiệu ứng Blur
     borderRadius: 32,
     padding: 28,
     borderWidth: 1.2,
-    borderColor: 'rgba(255, 255, 255, 0.35)',
-    // shadow cho iOS
+    borderColor: 'rgba(255, 255, 255, 0.25)',
+    overflow: 'hidden', // Khóa BlurView bên trong
+    // Shadow cho iOS
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
   },
   cardTitle: {
     fontSize: 24,
@@ -79,7 +76,6 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // ─── UI ELEMENTS ───
   ctaGradient: {
     paddingVertical: 16,
     borderRadius: 16,

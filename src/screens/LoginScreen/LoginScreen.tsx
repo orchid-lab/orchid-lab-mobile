@@ -1,12 +1,23 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StatusBar, Image, Alert, ActivityIndicator, Dimensions, StyleSheet } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TouchableOpacity, 
+  StatusBar, 
+  Image, 
+  Alert, 
+  ActivityIndicator, 
+  Dimensions, 
+  StyleSheet 
+} from 'react-native';
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
   withSpring, 
   interpolate, 
-  Extrapolation} from 'react-native-reanimated';
+  Extrapolation 
+} from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
@@ -20,7 +31,7 @@ import { decodeJWT, getGreeting } from '../../utils/authUtils';
 import { styles } from './styles';
 
 const { height: SCREEN_H } = Dimensions.get('window');
-const SWIPE_LIMIT = 220; // Ngưỡng vuốt để kích hoạt chuyển đổi
+const SWIPE_LIMIT = 220; 
 
 const LoginScreen: React.FC = () => {
   const navigation = useNavigation<any>();
@@ -116,7 +127,6 @@ const LoginScreen: React.FC = () => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       <View style={styles.root}>
         
-        {/* Nền 1: Hiện ban đầu (Sử dụng bgContainer để giữ tâm) */}
         <Animated.View style={[styles.bgContainer, bg1Style]}>
           <Image 
             source={require('../../assets/images/loginBackground.jpg')} 
@@ -125,7 +135,6 @@ const LoginScreen: React.FC = () => {
           />
         </Animated.View>
 
-        {/* Nền 2: Hiện khi vuốt lên */}
         <Animated.View style={[styles.bgContainer, bg2Style]}>
           <Image 
             source={require('../../assets/images/loginBackground2.jpg')} 
@@ -145,18 +154,27 @@ const LoginScreen: React.FC = () => {
             </Animated.View>
 
             <Animated.View style={[styles.glassCard, formStyle]}>
-              <BlurView
-                style={StyleSheet.absoluteFill}
-                blurType="xlight" 
-                blurAmount={50}  
-                reducedTransparencyFallbackColor="white"
-              />
-              <Text style={styles.cardTitle}>Sign In</Text>
+              {/* TRICK: Bọc BlurView để ép bo góc Android */}
+              <View style={[StyleSheet.absoluteFill, { borderRadius: 32, overflow: 'hidden' }]}>
+                <BlurView
+                  style={[StyleSheet.absoluteFill, { borderRadius: 32 }]}
+                  blurType="light" 
+                  blurAmount={20}  
+                  reducedTransparencyFallbackColor="black"
+                />
+              </View>
+
+              <Text style={styles.cardTitle}>Chào mừng!</Text>
               <AnimatedInput placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
               <AnimatedInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
               
               <TouchableOpacity activeOpacity={0.8} onPress={handleLogin} disabled={loading}>
-                <LinearGradient colors={['#34d978', '#1db85c']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.ctaGradient}>
+                <LinearGradient 
+                  colors={['#34d978', '#1db85c']} 
+                  start={{ x: 0, y: 0 }} 
+                  end={{ x: 1, y: 0 }} 
+                  style={styles.ctaGradient}
+                >
                   {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.ctaText}>ĐĂNG NHẬP</Text>}
                 </LinearGradient>
               </TouchableOpacity>
