@@ -11,6 +11,7 @@ import { API_URL } from '@env';
 import { styles } from '../Reports/styles';
 import { CustomTabBar } from '../../components/CustomTabBar';
 import { ExperimentLogItem } from '../../components/ExperimentLogItem';
+import { QuickMenu } from '../../components/QuickMenu';
 
 const BASE_URL = API_URL;
 const PAGE_SIZE = 10;
@@ -64,7 +65,7 @@ const ExperimentLogScreen = () => {
   return (
     <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
       <LinearGradient colors={['#DFE7DF', '#F2F6F2']} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
-      
+      <QuickMenu />
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Nhật Ký</Text>
       </View>

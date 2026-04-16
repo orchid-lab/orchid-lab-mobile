@@ -11,6 +11,7 @@ import { API_URL } from '@env';
 import { styles } from './styles';
 import { CustomTabBar } from '../../components/CustomTabBar';
 import { ReportItem } from '../../components/ReportItem';
+import { QuickMenu } from '../../components/QuickMenu';
 
 const BASE_URL = API_URL;
 const PAGE_SIZE = 100;
@@ -72,7 +73,7 @@ const TechnicianReportsScreen = () => {
   return (
     <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
       <LinearGradient colors={['#DFE7DF', '#F2F6F2']} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
-      
+      <QuickMenu />
       {/* Header UI */}
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Báo Cáo</Text>
