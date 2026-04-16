@@ -6,6 +6,7 @@ import ExperimentLogScreen from '../screens/ExperimentLog/ExperimentLogScreen';
 import SamplesScreen from '../screens/Samples/SamplesScreen';
 import BatchesScreen from '../screens/Batches/BatchesScreen';
 import TasksScreen from '../screens/Tasks/TasksScreen';
+import ProfileScreen from '../screens/Profile/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ export const AuthNavigator = () => {
       <Stack.Screen name="Samples" component={SamplesScreen} />
       <Stack.Screen name="Batches" component={BatchesScreen} />
       <Stack.Screen name="Tasks" component={TasksScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
   );
 };

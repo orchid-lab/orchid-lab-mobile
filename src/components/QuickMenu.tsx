@@ -22,7 +22,6 @@ export const QuickMenu = () => {
   }));
 
   const handleLogout = () => {
-    // Reset stack về trang Login
     navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
   };
 
