@@ -1,19 +1,35 @@
-// src/screens/LoginScreen/styles.ts
 import { StyleSheet, Dimensions } from 'react-native';
 
-const { height: SCREEN_H, width: SCREEN_W } = Dimensions.get('window');
+const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#000' },
-  bgImage: { ...StyleSheet.absoluteFill },
+  root: { 
+    flex: 1, 
+    backgroundColor: '#000' 
+  },
+  // Container bọc ngoài để cố định vị trí ảnh
+  bgContainer: {
+    ...StyleSheet.absoluteFill,
+    width: SCREEN_W,
+    height: SCREEN_H,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  // Style cho ảnh - Ép theo kích thước màn hình
+  bgImage: {
+    width: SCREEN_W,
+    height: SCREEN_H,
+  },
   overlay: { 
     ...StyleSheet.absoluteFill, 
-    backgroundColor: 'rgba(0, 0, 0, 0.3)' 
+    backgroundColor: 'rgba(0, 0, 0, 0.2)' // Lớp phủ tối nhẹ để chữ nổi bật
   },
-  
-  contentContainer: { flex: 1 },
+  contentContainer: { 
+    flex: 1 
+  },
 
-  // Lời chào ban đầu (Căn giữa màn hình)
+  // ─── GREETING SECTION ───
   headlineWrap: {
     position: 'absolute',
     top: SCREEN_H * 0.38,
@@ -31,25 +47,29 @@ export const styles = StyleSheet.create({
     textShadowRadius: 10,
   },
   headlineSub: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.7)',
     marginTop: 12,
-    letterSpacing: 1.5,
-    fontWeight: '600',
+    letterSpacing: 2,
+    fontWeight: '700',
     textTransform: 'uppercase',
   },
 
-  // Thẻ Glassmorphism
+  // ─── GLASSMORPHISM CARD ───
   glassCard: {
     position: 'absolute',
     alignSelf: 'center',
     width: SCREEN_W * 0.88,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    backgroundColor: 'rgba(255, 255, 255, 0)',
     borderRadius: 32,
     padding: 28,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    // Không dùng elevation để tránh lỗi 2 màu trên Android
+    borderWidth: 1.2,
+    borderColor: 'rgba(255, 255, 255, 0.35)',
+    // shadow cho iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
   },
   cardTitle: {
     fontSize: 24,
@@ -59,7 +79,7 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // Button & Feedback
+  // ─── UI ELEMENTS ───
   ctaGradient: {
     paddingVertical: 16,
     borderRadius: 16,
@@ -67,8 +87,11 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 10,
   },
-  ctaText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
-
+  ctaText: { 
+    color: '#FFFFFF', 
+    fontSize: 16, 
+    fontWeight: '700' 
+  },
   swipeHint: {
     position: 'absolute',
     bottom: 40,
@@ -77,10 +100,10 @@ export const styles = StyleSheet.create({
   },
   swipeText: {
     color: '#FFF',
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: 10,
+    fontWeight: '800',
     opacity: 0.5,
-    letterSpacing: 2,
+    letterSpacing: 3,
     marginTop: 8,
   },
 });

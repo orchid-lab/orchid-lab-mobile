@@ -1,7 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
-// src/screens/LoginScreen/LoginScreen.tsx
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StatusBar, Image, Alert, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StatusBar, Image, Alert, ActivityIndicator, Dimensions, StyleSheet } from 'react-native';
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
@@ -12,6 +11,7 @@ import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-g
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { ChevronUp } from 'lucide-react-native';
+import { BlurView } from '@react-native-community/blur';
 
 import AnimatedInput from '../../components/AnimatedInput';
 import { useAuth } from '../../context/AuthContext';
@@ -20,7 +20,7 @@ import { decodeJWT, getGreeting } from '../../utils/authUtils';
 import { styles } from './styles';
 
 const { height: SCREEN_H } = Dimensions.get('window');
-const SWIPE_LIMIT = 200; 
+const SWIPE_LIMIT = 220; // Ngưỡng vuốt để kích hoạt chuyển đổi
 
 const LoginScreen: React.FC = () => {
   const navigation = useNavigation<any>();
@@ -30,17 +30,14 @@ const LoginScreen: React.FC = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // sharedValue lưu trạng thái vuốt
   const dragY = useSharedValue(0);
-  const isFormVisible = useSharedValue(0); // 0: Chế độ Greeting, 1: Chế độ Login
+  const isFormVisible = useSharedValue(0);
 
   const gesture = Gesture.Pan()
     .onUpdate((event) => {
-      // Nếu đang ở màn hình chào, cho phép vuốt lên (âm)
       if (isFormVisible.value === 0) {
         dragY.value = Math.min(0, event.translationY);
       } else {
-        // Nếu đang ở màn hình login, cho phép vuốt xuống (dương) để quay lại
         dragY.value = Math.max(0, event.translationY) - SWIPE_LIMIT;
       }
     })
@@ -62,7 +59,7 @@ const LoginScreen: React.FC = () => {
       }
     });
 
-  // Hiệu ứng Fade giữa 2 hình nền
+  // 1. Fade hiệu ứng ảnh nền
   const bg1Style = useAnimatedStyle(() => ({
     opacity: interpolate(dragY.value, [0, -SWIPE_LIMIT], [1, 0], Extrapolation.CLAMP),
   }));
@@ -71,16 +68,16 @@ const LoginScreen: React.FC = () => {
     opacity: interpolate(dragY.value, [0, -SWIPE_LIMIT], [0, 1], Extrapolation.CLAMP),
   }));
 
-  // Hiệu ứng Lời chào
+  // 2. Chuyển động lời chào
   const greetingStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(dragY.value, [0, -100], [1, 0], Extrapolation.CLAMP);
-    const translateY = interpolate(dragY.value, [0, -SWIPE_LIMIT], [0, -50], Extrapolation.CLAMP);
+    const opacity = interpolate(dragY.value, [0, -80], [1, 0], Extrapolation.CLAMP);
+    const translateY = interpolate(dragY.value, [0, -SWIPE_LIMIT], [0, -40], Extrapolation.CLAMP);
     return { opacity, transform: [{ translateY }] };
   });
 
-  // Hiệu ứng Form Login (Trượt lên và Fade in)
+  // 3. Hiệu ứng Form Login
   const formStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(dragY.value, [-50, -SWIPE_LIMIT], [0, 1], Extrapolation.CLAMP);
+    const opacity = interpolate(dragY.value, [-60, -SWIPE_LIMIT], [0, 1], Extrapolation.CLAMP);
     const translateY = interpolate(dragY.value, [0, -SWIPE_LIMIT], [SCREEN_H * 0.6, SCREEN_H * 0.28], Extrapolation.CLAMP);
     return { opacity, transform: [{ translateY }] };
   });
@@ -101,7 +98,7 @@ const LoginScreen: React.FC = () => {
           id: String(decoded?.sub || data.id),
           name: data.name || decoded?.name || '',
           email: data.email || decoded?.email || email,
-          roleName: data.roleName || decoded?.role || 'User',
+          roleName: data.roleName || decoded?.role || 'Nhân viên',
         });
         navigation.replace('TechnicianReports');
       } else {
@@ -119,14 +116,22 @@ const LoginScreen: React.FC = () => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       <View style={styles.root}>
         
-        {/* Nền 1: Hiện ban đầu */}
-        <Animated.View style={[styles.bgImage, bg1Style]}>
-          <Image source={require('../../assets/images/loginBackground.jpg')} style={styles.bgImage} resizeMode="cover" />
+        {/* Nền 1: Hiện ban đầu (Sử dụng bgContainer để giữ tâm) */}
+        <Animated.View style={[styles.bgContainer, bg1Style]}>
+          <Image 
+            source={require('../../assets/images/loginBackground.jpg')} 
+            style={styles.bgImage} 
+            resizeMode="cover" 
+          />
         </Animated.View>
 
         {/* Nền 2: Hiện khi vuốt lên */}
-        <Animated.View style={[styles.bgImage, bg2Style]}>
-          <Image source={require('../../assets/images/loginBackground2.jpg')} style={styles.bgImage} resizeMode="cover" />
+        <Animated.View style={[styles.bgContainer, bg2Style]}>
+          <Image 
+            source={require('../../assets/images/loginBackground2.jpg')} 
+            style={styles.bgImage} 
+            resizeMode="cover" 
+          />
         </Animated.View>
 
         <View style={styles.overlay} />
@@ -134,14 +139,18 @@ const LoginScreen: React.FC = () => {
         <GestureDetector gesture={gesture}>
           <View style={styles.contentContainer}>
             
-            {/* 1. Khu vực lời chào */}
             <Animated.View style={[styles.headlineWrap, greetingStyle]}>
               <Text style={styles.headlineHello}>{getGreeting()}</Text>
               <Text style={styles.headlineSub}>Orchid Lab System</Text>
             </Animated.View>
 
-            {/* 2. Thẻ Đăng nhập (Glassmorphism) */}
             <Animated.View style={[styles.glassCard, formStyle]}>
+              <BlurView
+                style={StyleSheet.absoluteFill}
+                blurType="xlight" 
+                blurAmount={50}  
+                reducedTransparencyFallbackColor="white"
+              />
               <Text style={styles.cardTitle}>Sign In</Text>
               <AnimatedInput placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
               <AnimatedInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
@@ -153,10 +162,9 @@ const LoginScreen: React.FC = () => {
               </TouchableOpacity>
             </Animated.View>
 
-            {/* Gợi ý vuốt */}
             <Animated.View style={[styles.swipeHint, greetingStyle]}>
-               <ChevronUp color="#FFF" size={24} />
-               <Text style={styles.swipeText}>VUỐT LÊN</Text>
+               <ChevronUp color="#FFF" size={20} />
+               <Text style={styles.swipeText}>VUỐT LÊN ĐỂ ĐĂNG NHẬP</Text>
             </Animated.View>
           </View>
         </GestureDetector>
