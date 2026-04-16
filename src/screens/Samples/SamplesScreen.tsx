@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, RefreshControl, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TestTube, PackageCheck } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -30,7 +30,7 @@ const SamplesScreen = () => {
       const cleanUrl = String(BASE_URL).replace(/\/+$/, '');
       const res = await fetch(`${cleanUrl}/api/samples?pageNo=${pageNo}&pageSize=${PAGE_SIZE}`);
       const json = await res.json();
-      
+
       const fetchedData = json.data ?? [];
       setData(prev => replace ? fetchedData : [...prev, ...fetchedData]);
       setTotalCount(json.totalCount ?? 0);
@@ -64,7 +64,18 @@ const SamplesScreen = () => {
 
   return (
     <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
-      <LinearGradient colors={['#DFE7DF', '#F2F6F2']} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+      {/* Hình nền */}
+      <ImageBackground
+        source={require('../../assets/images/background.jpg')}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+        resizeMode="cover"
+      >
+        <LinearGradient
+          colors={['rgba(223,231,223,0.85)', 'rgba(242,246,242,0.85)']}
+          style={{ flex: 1 }}
+        />
+      </ImageBackground>
+
       <QuickMenu />
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Mẫu Vật</Text>
