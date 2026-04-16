@@ -120,7 +120,7 @@ const FieldRow: React.FC<{
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 const ProfileScreen: React.FC = () => {
   const navigation = useNavigation<any>();
-  const { user, token, logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [form, setForm] = useState<EditForm>({ name: '', email: '', phoneNumber: '', avatarUrl: '' });
@@ -178,7 +178,6 @@ const ProfileScreen: React.FC = () => {
       const res = await fetch(`${BASE_URL}/api/user/${user!.id}`, {
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
       });
       const data = await res.json();
@@ -220,7 +219,6 @@ const ProfileScreen: React.FC = () => {
         const res = await fetch(`${BASE_URL}/api/images/user`, {
           method: 'POST',
           headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
           body: formData,
         });
@@ -258,7 +256,6 @@ const ProfileScreen: React.FC = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(body),
       });
