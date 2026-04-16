@@ -8,7 +8,7 @@ import { BookOpen, Activity } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { API_URL } from '@env';
 
-import { styles } from '../Reports/styles';
+import { styles } from '../../styles/styles';
 import { CustomTabBar } from '../../components/CustomTabBar';
 import { ExperimentLogItem } from '../../components/ExperimentLogItem';
 import { QuickMenu } from '../../components/QuickMenu';

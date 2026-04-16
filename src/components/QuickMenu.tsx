@@ -1,25 +1,45 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Platform } from 'react-native';
-import Animated, { useAnimatedStyle, withSpring, withTiming, useSharedValue } from 'react-native-reanimated';
+import Animated, { 
+  useAnimatedStyle, 
+  withTiming, 
+  useSharedValue, 
+  Easing 
+} from 'react-native-reanimated';
 import { User, LogOut, Settings } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export const QuickMenu = () => {
   const [expanded, setExpanded] = useState(false);
   const navigation = useNavigation<any>();
+  
+  // Animation value: 0 là đóng, 1 là mở
   const animValue = useSharedValue(0);
 
   const toggleMenu = () => {
     const toValue = expanded ? 0 : 1;
-    animValue.value = withSpring(toValue, { damping: 15, stiffness: 150 });
+    // Tạm biệt withSpring, dùng withTiming 150ms cho tốc độ "bàn thờ"
+    // Easing.out giúp nó bung ra nhanh ở đầu và mượt ở cuối
+    animValue.value = withTiming(toValue, { 
+      duration: 300,
+      easing: Easing.out(Easing.quad) 
+    });
     setExpanded(!expanded);
   };
 
-  const menuStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: animValue.value }, { translateY: withTiming(expanded ? 0 : -20) }],
-    opacity: withTiming(animValue.value, { duration: 150 }),
-  }));
+  const menuStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        // Scale từ 0.8 lên 1: Khi đóng sẽ có cảm giác "Zoom out" nhẹ cực sang
+        { scale: 0.8 + (animValue.value * 0.2) }, 
+        // Trượt nhẹ lên trên một chút khi đóng
+        { translateY: -10 * (1 - animValue.value) } 
+      ],
+      // Fade mượt mà theo animValue
+      opacity: animValue.value,
+    };
+  });
 
   const handleLogout = () => {
     navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
@@ -27,15 +47,22 @@ export const QuickMenu = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity activeOpacity={0.9} onPress={toggleMenu} style={[styles.mainButton, expanded && styles.mainButtonActive]}>
+      {/* Nút chính */}
+      <TouchableOpacity 
+        activeOpacity={0.9} 
+        onPress={toggleMenu} 
+        style={[styles.mainButton, expanded && styles.mainButtonActive]}
+      >
         <Settings size={22} color={expanded ? "#131313" : "#FFFFFF"} />
       </TouchableOpacity>
 
+      {/* Menu phụ */}
       <Animated.View style={[styles.expandedMenu, menuStyle, { pointerEvents: expanded ? 'auto' : 'none' }]}>
         <TouchableOpacity style={styles.subButton} onPress={() => { toggleMenu(); navigation.navigate('Profile'); }}>
           <User size={18} color="#1F3D2F" />
           <Text style={styles.subText}>Hồ sơ</Text>
         </TouchableOpacity>
+        
         <TouchableOpacity style={[styles.subButton, { borderBottomWidth: 0 }]} onPress={handleLogout}>
           <LogOut size={18} color="#FF5252" />
           <Text style={[styles.subText, { color: '#FF5252' }]}>Đăng xuất</Text>

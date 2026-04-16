@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { CheckCircle2, Clock } from 'lucide-react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
-import { styles } from '../screens/Reports/styles';
+import { styles } from '../styles/styles';
 
 type Report = {
   id: string;

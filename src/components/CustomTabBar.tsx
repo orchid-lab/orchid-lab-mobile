@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { ClipboardList, BookOpen, FileText, Sprout, TestTube } from 'lucide-react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { styles } from '../screens/Reports/styles';
+import { styles } from '../styles/styles';
 
 const TABS = [
   { id: 'tasks', label: 'Công việc', icon: ClipboardList, route: 'Tasks' },

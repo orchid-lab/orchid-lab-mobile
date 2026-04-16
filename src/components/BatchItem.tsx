@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Layers, MapPin } from 'lucide-react-native';
-import { styles } from '../screens/Reports/styles';
+import { styles } from '../styles/styles';
 
 interface Props {
   item: {

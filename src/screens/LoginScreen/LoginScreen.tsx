@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
@@ -30,25 +31,60 @@ import LeafIllustration from '../../components/LeafIllustration';
 import AnimatedInput from '../../components/AnimatedInput';
 import { styles } from '../../styles/loginStyles';
 import { API_URL } from '@env';
+import { useAuth } from '../../context/AuthContext';
 
 const BASE_URL = API_URL;
 
-// --- THÊM HÀM XÁC ĐỊNH LỜI CHÀO THEO GIỜ ---
+const decodeBase64 = (input: string): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+  let str = input.replace(/[=]+$/, '');
+  let output = '';
+  for (
+    let bc = 0, bs = 0, buffer: any, i = 0;
+    (buffer = str.charAt(i++));
+    ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer, bc++ % 4)
+      ? (output += String.fromCharCode(255 & bs >> (-2 * bc & 6)))
+      : 0
+  ) {
+    buffer = chars.indexOf(buffer);
+  }
+  return output;
+};
+
+const decodeJWT = (token: string): Record<string, any> | null => {
+  try {
+    const base64Url = token.split('.')[1];
+    let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    while (base64.length % 4) base64 += '='; // padding fix
+    const jsonPayload = decodeURIComponent(
+      decodeBase64(base64)
+        .split('')
+        .map((c: string) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join(''),
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('Lỗi giải mã JWT:', error);
+    return null;
+  }
+};
+
 const getGreeting = () => {
   const hour = new Date().getHours();
   if (hour >= 5 && hour < 12) return 'Good Morning.';
   if (hour >= 12 && hour < 18) return 'Good Afternoon.';
   if (hour >= 18 && hour < 22) return 'Good Evening.';
-  return 'Good Night.'; 
+  return 'Good Night.';
 };
 
 const LoginScreen: React.FC = () => {
   const navigation = useNavigation<any>();
+  const { login } = useAuth();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  
-  // Lấy lời chào ngay khi render component
+
   const greeting = getGreeting();
 
   // ── Shared values ────────────────────────────────────────────────────────
@@ -122,6 +158,50 @@ const LoginScreen: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
+        console.log('[LOGIN] API response:', JSON.stringify(data));
+
+        // Thử lấy userId từ response trực tiếp trước
+        let userId =
+          data.id ??
+          data.userId ??
+          data.employeeId ??
+          data.staffId ??
+          data.user?.id ??
+          '';
+
+        // Nếu không có, decode từ JWT accessToken
+        if (!userId && data.accessToken) {
+          const decoded = decodeJWT(data.accessToken);
+          console.log('[LOGIN] JWT decoded payload:', JSON.stringify(decoded));
+          userId =
+            decoded?.sub ??
+            decoded?.id ??
+            decoded?.userId ??
+            decoded?.employeeId ??
+            decoded?.nameid ??
+            decoded?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ??
+            '';
+        }
+
+        if (!userId) {
+          console.warn('[LOGIN] Không tìm thấy user ID. Response:', JSON.stringify(data));
+          Alert.alert('Lỗi', 'Không tìm thấy ID người dùng. Vui lòng liên hệ quản trị viên.');
+          return;
+        }
+
+        // Lấy thêm info từ JWT nếu response không có
+        const decoded = data.accessToken ? decodeJWT(data.accessToken) : null;
+
+        await login({
+          id:          String(userId),
+          name:        data.name ?? data.fullName ?? decoded?.name ?? decoded?.unique_name ?? '',
+          email:       data.email ?? decoded?.email ?? '',
+          phoneNumber: data.phoneNumber ?? decoded?.phoneNumber ?? '',
+          roleId:      data.roleId ?? decoded?.roleId,
+          roleName:    data.roleName ?? decoded?.role ?? decoded?.roleName ?? '',
+          avatarUrl:   data.avatarUrl ?? null,
+        });
+
         navigation.replace('TechnicianReports');
       } else {
         Alert.alert('Đăng nhập thất bại', data?.detail || 'Email hoặc mật khẩu không đúng');
@@ -160,7 +240,6 @@ const LoginScreen: React.FC = () => {
             <LeafIllustration />
           </Animated.View>
 
-          {/* ĐẨY KHỐI NÀY LÊN CAO BẰNG MARGINTOP ÂM */}
           <Animated.View style={[styles.headlineWrap, headlineStyle, { marginTop: -40 }]}>
             <Text style={styles.headlineHello}>{greeting}</Text>
             <Text style={styles.headlineSub}>Welcome back 👋</Text>

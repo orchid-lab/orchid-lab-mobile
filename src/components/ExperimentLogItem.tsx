@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { FlaskConical, Beaker } from 'lucide-react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
-import { styles } from '../screens/Reports/styles';
+import { styles } from '../styles/styles';
 
 interface Props {
   item: {
